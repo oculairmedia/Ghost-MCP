@@ -1,0 +1,15 @@
+services:
+  ghostmcp:
+    image: oculair/ghost-mcp:latest
+    ports:
+      - "3064:3064"
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=3064
+      - GHOST_URL=${GHOST_URL}
+      - GHOST_KEY_ID=${GHOST_KEY_ID}
+      - GHOST_KEY_SECRET=${GHOST_KEY_SECRET}
+      - NODE_ENV=${NODE_ENV:-production}
+networks: {}
