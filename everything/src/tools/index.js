@@ -13,6 +13,12 @@ export function registerToolHandlers(server) {
 
     // Register tool call handler
     server.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        if (request.params.name === 'list_tools') {
+            return {
+                tools: ghostToolDefinitions,
+            };
+        }
+
         const handler = ghostToolHandlers[request.params.name];
         
         if (handler) {

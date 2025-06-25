@@ -2,10 +2,10 @@
 import dotenv from 'dotenv';
 import { GhostServer } from './core/server.js';
 import { registerToolHandlers } from './tools/index.js';
-import { runStdio, runSSE } from './transports/index.js';
+import { runStdio, runSSE, runHTTP } from './transports/index.js';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: './.env' });
 
 /**
  * Initialize and run the Ghost MCP server
@@ -20,9 +20,13 @@ async function main() {
         
         // Determine transport mode from command line arguments
         const useSSE = process.argv.includes('--sse');
+        const useHTTP = process.argv.includes('--http');
         
         // Run server with appropriate transport
-        if (useSSE) {
+        if (useHTTP) {
+            console.log('Starting Ghost server with HTTP transport');
+            await runHTTP(server);
+        } else if (useSSE) {
             console.log('Starting Ghost server with SSE transport');
             await runSSE(server);
         } else {
