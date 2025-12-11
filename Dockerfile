@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 3064
 
 # Default command
-CMD ["node", "src/index.js", "--http"]
+CMD ["node", "index.js", "--http"]
