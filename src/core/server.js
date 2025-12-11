@@ -26,12 +26,25 @@ export class GhostServer {
         this.server.onerror = (error) => console.error('[MCP Error]', error);
 
         // Initialize API configuration
-        this.baseUrl = process.env.GHOST_URL || 'https://blog.emmanuelu.com';
-        this.keyId = process.env.GHOST_KEY_ID;
-        this.keySecret = process.env.GHOST_KEY_SECRET;
+        // Support both GHOST_API_URL and legacy GHOST_URL
+        this.baseUrl = process.env.GHOST_API_URL || process.env.GHOST_URL || 'https://blog.emmanuelu.com';
+        
+        // Support both GHOST_ADMIN_KEY (id:secret format) and legacy separate vars
+        const adminKey = process.env.GHOST_ADMIN_KEY;
+        if (adminKey && adminKey.includes(':')) {
+            const [keyId, keySecret] = adminKey.split(':');
+            this.keyId = keyId;
+            this.keySecret = keySecret;
+        } else {
+            // Fallback to legacy separate variables
+            this.keyId = process.env.GHOST_KEY_ID;
+            this.keySecret = process.env.GHOST_KEY_SECRET;
+        }
         
         if (!this.keyId || !this.keySecret) {
-            console.warn('Warning: GHOST_KEY_ID or GHOST_KEY_SECRET environment variables not set');
+            console.warn('Warning: Ghost API credentials not configured. Set GHOST_ADMIN_KEY (id:secret format) or GHOST_KEY_ID and GHOST_KEY_SECRET');
+        } else {
+            console.log('API credentials: Configured');
         }
         
         // Initialize axios instance for API requests
