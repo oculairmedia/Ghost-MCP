@@ -117,6 +117,33 @@ export const mockResponses = {
         }]
     },
     
+    tags: {
+        tags: [
+            {
+                id: '507f1f77bcf86cd799439014',
+                name: 'Test Tag',
+                slug: 'test-tag',
+                visibility: 'public'
+            },
+            {
+                id: '507f1f77bcf86cd799439015',
+                name: 'Another Tag',
+                slug: 'another-tag',
+                visibility: 'public'
+            }
+        ],
+        meta: {
+            pagination: {
+                page: 1,
+                limit: 15,
+                pages: 1,
+                total: 2,
+                next: null,
+                prev: null
+            }
+        }
+    },
+    
     error: {
         errors: [{
             message: 'Resource not found',

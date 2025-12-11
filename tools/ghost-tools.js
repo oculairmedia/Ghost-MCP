@@ -28,9 +28,17 @@ import {
     deleteGhostPageToolDefinition
 } from './page-tools.js';
 
-// Import tag tools (not refactored yet - different structure)
-import { handleCreateGhostTag, createGhostTagToolDefinition } from './create-ghost-tag.js';
-import { handleUpdateGhostTag, updateGhostTagToolDefinition } from './update-ghost-tag.js';
+// Import refactored tag tools
+import {
+    handleCreateGhostTag,
+    handleListGhostTags,
+    handleUpdateGhostTag,
+    handleDeleteGhostTag,
+    createGhostTagToolDefinition,
+    listGhostTagsToolDefinition,
+    updateGhostTagToolDefinition,
+    deleteGhostTagToolDefinition
+} from './tag-tools.js';
 
 // Export all tool handlers
 export const ghostToolHandlers = {
@@ -46,7 +54,9 @@ export const ghostToolHandlers = {
     delete_ghost_page: handleDeleteGhostPage,
     // Tags
     create_ghost_tag: handleCreateGhostTag,
+    list_ghost_tags: handleListGhostTags,
     update_ghost_tag: handleUpdateGhostTag,
+    delete_ghost_tag: handleDeleteGhostTag,
 };
 
 // Export all tool definitions
@@ -63,7 +73,9 @@ export const ghostToolDefinitions = [
     deleteGhostPageToolDefinition,
     // Tags
     createGhostTagToolDefinition,
+    listGhostTagsToolDefinition,
     updateGhostTagToolDefinition,
+    deleteGhostTagToolDefinition,
 ];
 
 // Re-export shared API utilities for backward compatibility

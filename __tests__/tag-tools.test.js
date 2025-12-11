@@ -66,8 +66,16 @@ afterEach(() => {
 });
 
 // Import handlers after mocking
-const { handleCreateGhostTag, createGhostTagToolDefinition } = await import('../tools/create-ghost-tag.js');
-const { handleUpdateGhostTag, updateGhostTagToolDefinition } = await import('../tools/update-ghost-tag.js');
+const { 
+    handleCreateGhostTag, 
+    handleListGhostTags,
+    handleUpdateGhostTag, 
+    handleDeleteGhostTag,
+    createGhostTagToolDefinition,
+    listGhostTagsToolDefinition,
+    updateGhostTagToolDefinition,
+    deleteGhostTagToolDefinition
+} = await import('../tools/tag-tools.js');
 
 // Mock server object
 const mockServer = createMockServer();
@@ -308,5 +316,119 @@ describe('handleUpdateGhostTag', () => {
         const payload = putCall[1];
         expect(payload.tags[0].name).toBe('Updated Tag');
         expect(payload.tags[0].description).toBeUndefined();
+    });
+});
+
+describe('Tool Definitions - List and Delete', () => {
+    describe('listGhostTagsToolDefinition', () => {
+        it('should have correct name', () => {
+            expect(listGhostTagsToolDefinition.name).toBe('list_ghost_tags');
+        });
+
+        it('should have no required fields', () => {
+            expect(listGhostTagsToolDefinition.inputSchema.required).toEqual([]);
+        });
+
+        it('should have pagination fields', () => {
+            const props = listGhostTagsToolDefinition.inputSchema.properties;
+            expect(props.page).toBeDefined();
+            expect(props.limit).toBeDefined();
+        });
+    });
+
+    describe('deleteGhostTagToolDefinition', () => {
+        it('should have correct name', () => {
+            expect(deleteGhostTagToolDefinition.name).toBe('delete_ghost_tag');
+        });
+
+        it('should require tag_id', () => {
+            expect(deleteGhostTagToolDefinition.inputSchema.required).toContain('tag_id');
+        });
+    });
+});
+
+describe('handleListGhostTags', () => {
+    it('should list tags with default parameters', async () => {
+        mockClient.get.mockResolvedValueOnce({
+            data: mockResponses.tags
+        });
+
+        const result = await handleListGhostTags(mockServer, {});
+
+        expect(result.isError).toBeUndefined();
+        expect(mockClient.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass pagination parameters', async () => {
+        mockClient.get.mockResolvedValueOnce({
+            data: mockResponses.tags
+        });
+
+        await handleListGhostTags(mockServer, { page: 2, limit: 10 });
+
+        const callArgs = mockClient.get.mock.calls[0];
+        expect(callArgs[1].params.page).toBe(2);
+        expect(callArgs[1].params.limit).toBe(10);
+    });
+
+    it('should include count.posts by default', async () => {
+        mockClient.get.mockResolvedValueOnce({
+            data: mockResponses.tags
+        });
+
+        await handleListGhostTags(mockServer, {});
+
+        const callArgs = mockClient.get.mock.calls[0];
+        expect(callArgs[1].params.include).toBe('count.posts');
+    });
+
+    it('should handle API errors gracefully', async () => {
+        mockClient.get.mockRejectedValueOnce(new Error('Network error'));
+
+        const result = await handleListGhostTags(mockServer, {});
+
+        expect(result.isError).toBe(true);
+    });
+});
+
+describe('handleDeleteGhostTag', () => {
+    it('should return error when tag_id is missing', async () => {
+        const result = await handleDeleteGhostTag(mockServer, {});
+        
+        expect(result.isError).toBe(true);
+        const parsed = JSON.parse(result.content[0].text);
+        expect(parsed.error).toContain('Tag ID is required');
+    });
+
+    it('should delete tag successfully', async () => {
+        mockClient.delete.mockResolvedValueOnce({
+            status: 204,
+            data: null
+        });
+
+        const result = await handleDeleteGhostTag(mockServer, { tag_id: 'tag-123' });
+
+        expect(result.isError).toBeUndefined();
+        expect(mockClient.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call correct API endpoint', async () => {
+        mockClient.delete.mockResolvedValueOnce({
+            status: 204,
+            data: null
+        });
+
+        await handleDeleteGhostTag(mockServer, { tag_id: 'tag-abc123' });
+
+        const callArgs = mockClient.delete.mock.calls[0];
+        expect(callArgs[0]).toContain('/tags/tag-abc123');
+    });
+
+    it('should handle API errors gracefully', async () => {
+        mockClient.delete.mockRejectedValueOnce(new Error('Not found'));
+
+        const result = await handleDeleteGhostTag(mockServer, { tag_id: 'tag-123' });
+
+        expect(result.isError).toBe(true);
     });
 });
