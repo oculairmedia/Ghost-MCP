@@ -66,10 +66,16 @@ afterEach(() => {
 });
 
 // Import handlers after mocking
-const { handleCreateGhostPage, createGhostPageToolDefinition } = await import('../tools/create-ghost-page.js');
-const { handleListGhostPages, listGhostPagesToolDefinition } = await import('../tools/list-ghost-pages.js');
-const { handleUpdateGhostPage, updateGhostPageToolDefinition } = await import('../tools/update-ghost-page.js');
-const { handleDeleteGhostPage, deleteGhostPageToolDefinition } = await import('../tools/delete-ghost-page.js');
+const { 
+    handleCreateGhostPage, 
+    handleListGhostPages,
+    handleUpdateGhostPage,
+    handleDeleteGhostPage,
+    createGhostPageToolDefinition,
+    listGhostPagesToolDefinition,
+    updateGhostPageToolDefinition,
+    deleteGhostPageToolDefinition
+} = await import('../tools/page-tools.js');
 
 // Mock server object
 const mockServer = createMockServer();

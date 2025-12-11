@@ -66,10 +66,16 @@ afterEach(() => {
 });
 
 // Import handlers after mocking
-const { handleCreateGhostPost, createGhostPostToolDefinition } = await import('../tools/create-ghost-post.js');
-const { handleListGhostPosts, listGhostPostsToolDefinition } = await import('../tools/list-ghost-posts.js');
-const { handleUpdateGhostPost, updateGhostPostToolDefinition } = await import('../tools/update-ghost-post.js');
-const { handleDeleteGhostPost, deleteGhostPostToolDefinition } = await import('../tools/delete-ghost-post.js');
+const { 
+    handleCreateGhostPost, 
+    handleListGhostPosts,
+    handleUpdateGhostPost,
+    handleDeleteGhostPost,
+    createGhostPostToolDefinition,
+    listGhostPostsToolDefinition,
+    updateGhostPostToolDefinition,
+    deleteGhostPostToolDefinition
+} = await import('../tools/post-tools.js');
 
 // Mock server object
 const mockServer = createMockServer();
